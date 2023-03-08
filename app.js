@@ -3,6 +3,8 @@ const app = express()
 const tasks = require("./routes/tasks")
 const connectDB = require("./db/connect")
 require("dotenv").config()
+const notFound = require("./middleware/not-found")
+const errorHandlerMiddleware = require("./middleware/error-handler")
 
 // middlware
 app.use(express.static("./public"))
@@ -15,14 +17,11 @@ app.get("/hello", (req, res) => {
 
 app.use("/api/v1/tasks", tasks)
 
-// We will have following routes in our app
-// app.get('/api/v1/tasks')         - get all the task
-// app.post('/api/v1/tasks')        - create a new task
-// app.get('/api/v1/tasks/:id')     - get single task
-// app.patch('/api/v1/tasks/:id')   - update task
-// app.delete('/api/v1/tasks/:id')  - delete task
+// Handling all other routes
+app.use(notFound)
+app.use(errorHandlerMiddleware)
 
-const port = 5000
+const port = process.env.port || 5000
 
 // If connected to DB then only start server
 const start = async () => {
